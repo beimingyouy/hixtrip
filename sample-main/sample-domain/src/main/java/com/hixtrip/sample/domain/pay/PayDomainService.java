@@ -1,12 +1,12 @@
 package com.hixtrip.sample.domain.pay;
 
 import com.hixtrip.sample.domain.pay.model.CommandPay;
+import com.hixtrip.sample.domain.pay.strategy.PaymentCallback;
 import com.hixtrip.sample.domain.pay.strategy.PaymentCallbackStrategy;
 import com.hixtrip.sample.domain.pay.strategy.context.PaymentCallbackContext;
-import com.hixtrip.sample.domain.pay.strategy.impl.PaymentDuplicateCallbackStrategy;
-import com.hixtrip.sample.domain.pay.strategy.impl.PaymentFailureCallbackStrategy;
-import com.hixtrip.sample.domain.pay.strategy.impl.PaymentSuccessCallbackStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentDuplicateCallback;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentFailureCallback;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentSuccessCallback;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,15 +33,10 @@ public class PayDomainService {
      *
      * @param commandPay
      */
-    public void handlePaymentCallback(CommandPay commandPay) {
-        PaymentCallbackStrategy strategy = switch (commandPay.getPayStatus()) {
-            case PaymentCallbackStrategy.SUCCESS -> new PaymentSuccessCallbackStrategy();
-            case PaymentCallbackStrategy.FAILURE -> new PaymentFailureCallbackStrategy();
-            case PaymentCallbackStrategy.DUPLICATE -> new PaymentDuplicateCallbackStrategy();
-            default -> throw new IllegalArgumentException("pay status error,status : " + commandPay.getPayStatus());
-        };
-
+    public String handlePaymentCallback(CommandPay commandPay) {
+        PaymentCallback strategy = PaymentCallbackStrategy.getByPayStatus(commandPay.getPayStatus());
         PaymentCallbackContext context = new PaymentCallbackContext(strategy);
-        context.execute(commandPay);
+        return context.execute(commandPay);
+
     }
 }

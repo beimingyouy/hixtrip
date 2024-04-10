@@ -1,5 +1,6 @@
 package com.hixtrip.sample.app.convertor;
 
+import com.hixtrip.sample.client.order.dto.CommandPayDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -1,15 +1,34 @@
 package com.hixtrip.sample.domain.pay.strategy;
 
-import com.hixtrip.sample.domain.pay.PayDomainService;
-import com.hixtrip.sample.domain.pay.model.CommandPay;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentDuplicateCallback;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentFailureCallback;
+import com.hixtrip.sample.domain.pay.strategy.impl.PaymentSuccessCallback;
+import lombok.Getter;
 
-public interface PaymentCallbackStrategy {
+@Getter
+public enum PaymentCallbackStrategy {
 
 
-    public static String SUCCESS = "SUCCESS";
-    public static String FAILURE = "FAILURE";
-    public static String DUPLICATE = "DUPLICATE";
+    SUCCESS(new PaymentSuccessCallback()),
+    FAILURE(new PaymentFailureCallback()),
+    DUPLICATE(new PaymentDuplicateCallback());
 
-    void handle(CommandPay commandPay);
+    private final PaymentCallback paymentCallback;
+    public static final String SUCCESS_STR = "SUCCESS";
+    public static final String FAILURE_STR = "FAILURE";
+    public static final String DUPLICATE_STR = "DUPLICATE";
+
+    PaymentCallbackStrategy(PaymentCallback paymentCallback) {
+        this.paymentCallback = paymentCallback;
+    }
+
+    public static PaymentCallback getByPayStatus(String payStatus) {
+        return switch (payStatus) {
+            case SUCCESS_STR -> new PaymentSuccessCallback();
+            case FAILURE_STR -> new PaymentFailureCallback();
+            case DUPLICATE_STR -> new PaymentDuplicateCallback();
+            default -> throw new IllegalArgumentException("pay status error,status : ");
+        };
+    }
+
 }

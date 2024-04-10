@@ -1,7 +1,9 @@
 package com.hixtrip.sample.entry;
 
+import com.hixtrip.sample.app.api.PayCallBackService;
 import com.hixtrip.sample.client.order.dto.CommandOderCreateDTO;
 import com.hixtrip.sample.client.order.dto.CommandPayDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
+    @Autowired
+    private PayCallBackService callBackService;
 
     /**
      * todo 这是你要实现的接口
@@ -35,7 +39,7 @@ public class OrderController {
      */
     @PostMapping(path = "/command/order/pay/callback")
     public String payCallback(@RequestBody CommandPayDTO commandPayDTO) {
-        return "";
+        return callBackService.payCallBack(commandPayDTO);
     }
 
 }
